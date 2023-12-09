@@ -1,0 +1,37 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  padding-top: 60dvh;
+}
+
+.images {
+  display: grid;
+  /* grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); */
+  /* grid-template-rows: repeat(6, 300px); */
+  grid-gap: 1rem;
+}
+
+.image__wrapper {
+  max-height: 600px;
+  height: 50dvh;
+  position: relative;
+  display: flex;
+  &:nth-child(even) {
+    justify-content: end;
+  }
+}
+
+img {
+  width: auto;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+
+canvas.webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
