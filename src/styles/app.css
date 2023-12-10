@@ -14,7 +14,7 @@
 
 .image__wrapper {
   max-height: 600px;
-  height: 50dvh;
+  height: 50dvw;
   position: relative;
   display: flex;
   &:nth-child(even) {

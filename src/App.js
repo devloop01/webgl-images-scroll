@@ -1,5 +1,5 @@
+import { Renderer, Camera, Transform, Mesh, Plane, Program, Texture, Vec2 } from "ogl";
 import Lenis from "@studio-freight/lenis";
-import { Renderer, Camera, Transform, Mesh, Plane, Program, Texture } from "ogl";
 import { radToDeg } from "./utils";
 import vertex from "./shaders/vertex.glsl?raw";
 import fragment from "./shaders/fragment.glsl?raw";
@@ -32,7 +32,9 @@ export class App {
   }
 
   initSmoothScroll() {
-    this.lenis = new Lenis();
+    this.lenis = new Lenis({
+      smoothTouch: true,
+    });
   }
 
   initOgl() {
@@ -61,6 +63,13 @@ export class App {
   }
 
   createImages() {
+    const planeGeo = new Plane(this.gl, {
+      width: 1,
+      height: 1,
+      widthSegments: 32,
+      heightSegments: 32,
+    });
+
     this.domImages.map((image) => {
       const { width, height, top, left } = image.getBoundingClientRect();
 
@@ -69,25 +78,30 @@ export class App {
       const program = new Program(this.gl, {
         vertex,
         fragment,
-        uniforms: {
-          uTexture: { value: texture },
-          uTextureAspect: { value: 1 },
-          uPlaneAspect: { value: width / height },
-        },
       });
+
+      program.uniforms = {
+        uTexture: { value: texture },
+        uPlaneSize: { value: new Vec2(width, height) },
+        uTextureSize: { value: new Vec2(0, 0) },
+        uVelo: { value: 0 },
+        uScale: { value: 1 },
+      };
 
       const img = new Image();
       img.src = image.src;
 
       img.onload = () => {
         texture.image = img;
-        program.uniforms.uTextureAspect.value = img.naturalWidth / img.naturalHeight;
+        program.uniforms.uTextureSize.value.set(img.naturalWidth, img.naturalHeight);
       };
 
       const mesh = new Mesh(this.gl, {
-        geometry: new Plane(this.gl, { width, height }),
+        geometry: planeGeo,
         program,
       });
+
+      mesh.scale.set(width, height, 1);
 
       mesh.position.x = left - this.dimensions.width / 2 + width / 2;
       mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
@@ -96,16 +110,6 @@ export class App {
 
       this.images.push(mesh);
     });
-
-    const updatePosition = () => {
-      this.images.forEach((image) => {
-        image.position.y += window.scrollY;
-      });
-
-      window.removeEventListener("scroll", updatePosition);
-    };
-
-    window.addEventListener("scroll", updatePosition);
   }
 
   tick() {
@@ -133,6 +137,9 @@ export class App {
   onScroll(scrollEvent) {
     this.images.forEach((image) => {
       image.position.y += scrollEvent.velocity;
+
+      image.program.uniforms.uVelo.value = scrollEvent.velocity * 0.02;
+      image.program.uniforms.uScale.value = 1 - Math.abs(scrollEvent.velocity * 0.001);
     });
   }
 
