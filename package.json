@@ -1,22 +1,29 @@
 {
-  "name": "webgl-images-slider",
+  "name": "webgl-images-scroll",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tsconfig/svelte": "^5.0.2",
     "@types/three": "^0.159.0",
-    "vite": "^5.0.7"
+    "svelte": "^4.2.3",
+    "svelte-check": "^3.6.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.29",
-    "gsap": "^3.12.3",
-    "ogl": "^1.0.3",
-    "stats-gl": "^2.0.1",
+    "@studio-freight/tempus": "^0.0.38",
+    "@threlte/core": "^7.0.10",
+    "@threlte/extras": "^8.0.8",
     "three": "^0.159.0"
   }
 }
