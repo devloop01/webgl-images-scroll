@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.29",
+    "@studio-freight/tempus": "^0.0.38",
     "@threlte/core": "^7.0.10",
+    "@threlte/extras": "^8.0.8",
     "three": "^0.159.0"
   }
 }

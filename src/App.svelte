@@ -1,8 +1,19 @@
 <script lang="ts">
+  // @ts-ignore
+  import Tempus from "@studio-freight/tempus";
   import Lenis from "@studio-freight/lenis";
   import { onMount } from "svelte";
+  import { Canvas } from "@threlte/core";
+  import Scene from "./Scene.svelte";
 
-  const imagesUrls = [
+  const imageUrls = [
+    "/images/image-1.jpg",
+    "/images/image-2.jpg",
+    "/images/image-3.jpg",
+    "/images/image-4.jpg",
+    "/images/image-5.jpg",
+    "/images/image-6.jpg",
+    //
     "/images/image-1.jpg",
     "/images/image-2.jpg",
     "/images/image-3.jpg",
@@ -11,38 +22,58 @@
     "/images/image-6.jpg",
   ];
 
-  let rafId = 0;
+  let dimensions = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+
   let lenis = new Lenis({
     smoothTouch: true,
   });
 
-  onMount(() => {
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
+  let imageRefs: HTMLImageElement[] = [];
 
-    rafId = requestAnimationFrame(raf);
+  function tick(time: number) {
+    lenis.raf(time);
+  }
+
+  onMount(() => {
+    const unsubRaf = Tempus.add(tick, 0);
+
+    lenis.on("scroll", (e: any) => {
+      console.log(e.velocity);
+    });
 
     return () => {
-      cancelAnimationFrame(rafId);
+      unsubRaf();
     };
   });
 </script>
 
-<!-- images from: https://unsplash.com/@resourcedatabase -->
+<svelte:window
+  on:resize={(e) => {
+    dimensions = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+    // lenis.resize();
+  }}
+/>
 
+<!-- images from: https://unsplash.com/@resourcedatabase -->
 <div class="container">
   <div class="images">
-    {#each imagesUrls as url, index}
+    {#each imageUrls as url, index (`${url}-${index}`)}
       <div class="image__wrapper">
-        <img src={url} alt="image {index}" />
+        <img src={url} alt="image {index}" bind:this={imageRefs[index]} />
       </div>
     {/each}
   </div>
 </div>
 
-<canvas class="webgl"></canvas>
+<Canvas renderMode="on-demand" size={{ width: dimensions.width, height: dimensions.height }}>
+  <Scene {dimensions} {imageRefs} />
+</Canvas>
 
 <style>
   .container {
@@ -73,11 +104,11 @@
     width: auto;
     height: 100%;
     object-fit: cover;
-    /* opacity: 0; */
+    opacity: 0;
     pointer-events: none;
   }
 
-  canvas.webgl {
+  :global(canvas[data-engine]) {
     position: fixed;
     top: 0;
     left: 0;
