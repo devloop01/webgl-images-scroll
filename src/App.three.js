@@ -63,13 +63,13 @@ export class App {
   initDomImages() {
     const imagesContainer = document.querySelector(".images");
 
-    [...imagesUrls, ...imagesUrls].map((url) => {
-      imagesContainer.innerHTML += /* html */ `
-        <div class="image__wrapper">
-          <img src="${url}" />
-        </div>
-      `;
-    });
+    // [...imagesUrls].map((url) => {
+    //   imagesContainer.innerHTML += /* html */ `
+    //     <div class="image__wrapper">
+    //       <img src="${url}" />
+    //     </div>
+    //   `;
+    // });
 
     this.domImages = [...imagesContainer.querySelectorAll("img")];
   }
