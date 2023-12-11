@@ -63,7 +63,7 @@ export class App {
   initDomImages() {
     const imagesContainer = document.querySelector(".images");
 
-    imagesUrls.map((url) => {
+    [...imagesUrls, ...imagesUrls].map((url) => {
       imagesContainer.innerHTML += /* html */ `
         <div class="image__wrapper">
           <img src="${url}" />
@@ -97,7 +97,7 @@ export class App {
 
     setTimeout(() => {
       this.createGlImages();
-    }, 50);
+    }, 100);
   }
 
   _calculateFov(height, camZ) {
