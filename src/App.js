@@ -98,10 +98,10 @@ export class App {
 
       mesh.scale.set(width, height, 1);
 
-      mesh.position.x = left - this.dimensions.width / 2 + width / 2;
-      mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
+      // mesh.position.x = left - this.dimensions.width / 2 + width / 2;
+      // mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
 
-      // mesh.position.y += -height * index * 1.05;
+      mesh.position.y += -height * index * 1.1;
 
       console.log({ left, top }, { x: mesh.position.x, y: mesh.position.y });
 
