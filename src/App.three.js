@@ -9,20 +9,20 @@ import {
   Mesh,
   LinearFilter,
 } from "three";
-import Stats from "three/examples/jsm/libs/stats.module";
+import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
 import { radToDeg } from "./utils";
 import vertexShader from "./shaders/vertex.glsl?raw";
 import fragmentShader from "./shaders/fragment.glsl?raw";
 
-const imagesUrls = [
-  "/images/image-1.jpg",
-  "/images/image-2.jpg",
-  "/images/image-3.jpg",
-  "/images/image-4.jpg",
-  "/images/image-5.jpg",
-  "/images/image-6.jpg",
-];
+// const imagesUrls = [
+//   "/images/image-1.jpg",
+//   "/images/image-2.jpg",
+//   "/images/image-3.jpg",
+//   "/images/image-4.jpg",
+//   "/images/image-5.jpg",
+//   "/images/image-6.jpg",
+// ];
 
 export class App {
   constructor({ canvas }) {
@@ -34,6 +34,8 @@ export class App {
 
     this.initialized = false;
 
+    this.domImages = [...document.querySelectorAll(".images img")];
+
     this.glImages = [];
 
     this.rafId = 0;
@@ -42,15 +44,14 @@ export class App {
   }
 
   init() {
+    this.stats = new Stats({ minimal: true });
+    document.body.appendChild(this.stats.dom);
+
     this.initSmoothScroll();
-    this.initDomImages();
     this.initGl();
     this.addEventListeners();
 
     this.render();
-
-    this.stats = new Stats();
-    document.body.appendChild(this.stats.dom);
   }
 
   initSmoothScroll() {
@@ -58,20 +59,6 @@ export class App {
       smoothTouch: true,
       // infinite: true,
     });
-  }
-
-  initDomImages() {
-    const imagesContainer = document.querySelector(".images");
-
-    // [...imagesUrls].map((url) => {
-    //   imagesContainer.innerHTML += /* html */ `
-    //     <div class="image__wrapper">
-    //       <img src="${url}" />
-    //     </div>
-    //   `;
-    // });
-
-    this.domImages = [...imagesContainer.querySelectorAll("img")];
   }
 
   initGl() {
@@ -155,13 +142,15 @@ export class App {
   }
 
   render() {
+    this.stats.init(this.renderer);
+
     const raf = (time) => {
       this.lenis.raf(time);
 
       this.rafId = requestAnimationFrame(raf);
 
-      this.stats.update();
       this.renderer.render(this.scene, this.camera);
+      this.stats.update();
     };
 
     this.rafId = requestAnimationFrame(raf);

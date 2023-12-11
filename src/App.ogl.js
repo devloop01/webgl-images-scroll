@@ -1,8 +1,18 @@
 import { Renderer, Camera, Transform, Mesh, Plane, Program, TextureLoader, Vec2 } from "ogl";
+import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
 import { radToDeg } from "./utils";
-import vertex from "./shaders/vertex.glsl?raw";
+import baseVertex from "./shaders/vertex.glsl?raw";
 import fragment from "./shaders/fragment.glsl?raw";
+
+const vertex = /*glsl*/ `
+  attribute vec3 position;
+  attribute vec2 uv;
+  uniform mat4 modelViewMatrix;
+  uniform mat4 projectionMatrix;
+
+  ${baseVertex}
+`;
 
 export class App {
   constructor({ canvas }) {
@@ -14,7 +24,7 @@ export class App {
 
     this.initialized = false;
 
-    this.domImages = [...document.querySelectorAll("img")];
+    this.domImages = [...document.querySelectorAll(".images img")];
 
     this.glImages = [];
 
@@ -24,11 +34,14 @@ export class App {
   }
 
   init() {
+    this.stats = new Stats({ minimal: true });
+    document.body.appendChild(this.stats.dom);
+
     this.initSmoothScroll();
     this.initOgl();
     this.addEventListeners();
 
-    this.tick();
+    this.render();
   }
 
   initSmoothScroll() {
@@ -58,7 +71,7 @@ export class App {
 
     setTimeout(() => {
       this.createGlImages();
-    }, 10);
+    }, 100);
   }
 
   _calculateFov(height, camZ) {
@@ -111,13 +124,16 @@ export class App {
     });
   }
 
-  tick() {
+  render() {
+    this.stats.init(this.gl);
+
     const raf = (time) => {
       this.lenis.raf(time);
 
       this.rafId = requestAnimationFrame(raf);
 
       this.renderer.render({ scene: this.scene, camera: this.camera });
+      this.stats.update();
     };
 
     this.rafId = requestAnimationFrame(raf);
