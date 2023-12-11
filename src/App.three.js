@@ -25,9 +25,9 @@ export class App {
 
     this.initialized = false;
 
-    this.domImages = [...document.querySelectorAll("img")];
+    this.domImages = [...imagesContainer.querySelectorAll("img")];
 
-    this.images = [];
+    this.glImages = [];
 
     this.rafId = 0;
 
@@ -36,10 +36,11 @@ export class App {
 
   init() {
     this.initSmoothScroll();
+    this.initDomImages();
     this.initGl();
     this.addEventListeners();
 
-    this.tick();
+    this.render();
 
     this.stats = new Stats();
     document.body.appendChild(this.stats.dom);
@@ -48,6 +49,7 @@ export class App {
   initSmoothScroll() {
     this.lenis = new Lenis({
       smoothTouch: true,
+      // infinite: true,
     });
   }
 
@@ -71,14 +73,17 @@ export class App {
     this.scene = new Scene();
 
     this.onResize();
-    this.createImages();
+
+    setTimeout(() => {
+      this.createGlImages();
+    }, 10);
   }
 
   _calculateFov(height, camZ) {
     return 2 * radToDeg(Math.atan(height / 2 / camZ));
   }
 
-  createImages() {
+  createGlImages() {
     const planeGeo = new PlaneGeometry(1, 1, 32, 32);
     const planeMat = new ShaderMaterial({
       vertexShader,
@@ -87,8 +92,11 @@ export class App {
 
     const loader = new TextureLoader();
 
-    this.domImages.map((image) => {
+    this.domImages.map((image, index) => {
       const { width, height, top, left } = image.getBoundingClientRect();
+
+      // const width = Math.min(this.dimensions.width * 0.8, 420);
+      // const height = width * 1.35;
 
       const mat = planeMat.clone();
       mat.uniforms = {
@@ -99,7 +107,7 @@ export class App {
         uScale: { value: 1 },
       };
 
-      loader.load(new URL(image.src).pathname, (texture) => {
+      loader.load(image.src, (texture) => {
         texture.minFilter = LinearFilter;
         texture.generateMipmaps = false;
 
@@ -117,13 +125,15 @@ export class App {
       mesh.position.x = left - this.dimensions.width / 2 + width / 2;
       mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
 
+      // mesh.position.y += -height * index * 1.05;
+
       this.scene.add(mesh);
 
-      this.images.push(mesh);
+      this.glImages.push(mesh);
     });
   }
 
-  tick() {
+  render() {
     const raf = (time) => {
       this.lenis.raf(time);
 
@@ -148,7 +158,7 @@ export class App {
   }
 
   onScroll(scrollEvent) {
-    this.images.forEach((image) => {
+    this.glImages.forEach((image) => {
       image.position.y += scrollEvent.velocity;
 
       const maxVel = Math.min(Math.abs(scrollEvent.velocity), 50) * scrollEvent.direction;

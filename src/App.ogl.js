@@ -16,7 +16,7 @@ export class App {
 
     this.domImages = [...document.querySelectorAll("img")];
 
-    this.images = [];
+    this.glImages = [];
 
     this.rafId = 0;
 
@@ -34,7 +34,6 @@ export class App {
   initSmoothScroll() {
     this.lenis = new Lenis({
       smoothTouch: true,
-      // infinite: true,
     });
   }
 
@@ -56,14 +55,17 @@ export class App {
     this.scene = new Transform();
 
     this.onResize();
-    this.createImages();
+
+    setTimeout(() => {
+      this.createGlImages();
+    }, 10);
   }
 
   _calculateFov(height, camZ) {
     return 2 * radToDeg(Math.atan(height / 2 / camZ));
   }
 
-  createImages() {
+  createGlImages() {
     const planeGeo = new Plane(this.gl, {
       width: 1,
       height: 1,
@@ -98,18 +100,14 @@ export class App {
 
       mesh.scale.set(width, height, 1);
 
-      // mesh.position.x = left - this.dimensions.width / 2 + width / 2;
-      // mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
+      mesh.position.x = left - this.dimensions.width / 2 + width / 2;
+      mesh.position.y = -top + this.dimensions.height / 2 - height / 2;
 
-      mesh.position.y += -height * index * 1.1;
-
-      console.log({ left, top }, { x: mesh.position.x, y: mesh.position.y });
-
-      // mesh.position.y += window.scrollY;
+      //   mesh.position.y += -height * index * 1.1;
 
       mesh.setParent(this.scene);
 
-      this.images.push(mesh);
+      this.glImages.push(mesh);
     });
   }
 
@@ -136,7 +134,7 @@ export class App {
   }
 
   onScroll(scrollEvent) {
-    this.images.forEach((image) => {
+    this.glImages.forEach((image) => {
       image.position.y += scrollEvent.velocity;
 
       const maxVel = Math.min(Math.abs(scrollEvent.velocity), 50) * scrollEvent.direction;
