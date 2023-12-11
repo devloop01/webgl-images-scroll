@@ -15,6 +15,15 @@ import { radToDeg } from "./utils";
 import vertexShader from "./shaders/vertex.glsl?raw";
 import fragmentShader from "./shaders/fragment.glsl?raw";
 
+const imagesUrls = [
+  "/images/image-1.jpg",
+  "/images/image-2.jpg",
+  "/images/image-3.jpg",
+  "/images/image-4.jpg",
+  "/images/image-5.jpg",
+  "/images/image-6.jpg",
+];
+
 export class App {
   constructor({ canvas }) {
     this.canvas = canvas;
@@ -24,8 +33,6 @@ export class App {
     };
 
     this.initialized = false;
-
-    this.domImages = [...imagesContainer.querySelectorAll("img")];
 
     this.glImages = [];
 
@@ -53,6 +60,20 @@ export class App {
     });
   }
 
+  initDomImages() {
+    const imagesContainer = document.querySelector(".images");
+
+    imagesUrls.map((url) => {
+      imagesContainer.innerHTML += /* html */ `
+        <div class="image__wrapper">
+          <img src="${url}" />
+        </div>
+      `;
+    });
+
+    this.domImages = [...imagesContainer.querySelectorAll("img")];
+  }
+
   initGl() {
     this.renderer = new WebGLRenderer({
       canvas: this.canvas,
@@ -76,7 +97,7 @@ export class App {
 
     setTimeout(() => {
       this.createGlImages();
-    }, 10);
+    }, 50);
   }
 
   _calculateFov(height, camZ) {

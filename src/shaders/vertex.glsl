@@ -2,11 +2,11 @@ precision mediump float;
 
 #define PI 3.1415926535897932384626433832795
 
-attribute vec3 position;
-attribute vec2 uv;
+// attribute vec3 position;
+// attribute vec2 uv;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+// uniform mat4 modelViewMatrix;
+// uniform mat4 projectionMatrix;
 
 uniform float uVelo;
 
