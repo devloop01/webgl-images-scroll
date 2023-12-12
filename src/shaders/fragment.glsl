@@ -27,15 +27,15 @@ void main() {
     vec2 texScale = (texUv - texCenter) * uScale + texCenter;
     vec3 tex = texture2D(uTexture, texScale).rgb;
 
-    texScale.y += 0.05 * uVelo;
+    texScale.y += 0.02 * uVelo;
     if(uv.y < 1.)
         tex.g = texture2D(uTexture, texScale).g;
 
-    texScale.y += 0.04 * uVelo;
+    texScale.y += 0.03 * uVelo;
     if(uv.y < 1.)
         tex.b = texture2D(uTexture, texScale).b;
 
     gl_FragColor.rgb = tex;
-    // gl_FragColor.rgb = vec3(vUv, 0.);
+    // gl_FragColor.rgb = vec3(texUv, 0.);
     gl_FragColor.a = 1.0;
 }
