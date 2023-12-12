@@ -56,7 +56,7 @@ export class App {
   createGlImages() {
     const planeGeometry = new PlaneGeometry(1, 1, 32, 32);
 
-    sleep(1000).then(() => {
+    sleep(import.meta.env.DEV ? 1000 : 100).then(() => {
       console.log("gl images");
       this.glImages = this.domImages.map((element) => {
         return new GlImage({
