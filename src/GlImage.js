@@ -89,7 +89,7 @@ export class GlImage {
     this.updateX();
     this.updateY(y);
 
-    const maxVel = Math.min(Math.abs(vel), 50) * dir;
+    const maxVel = Math.min(Math.abs(vel), 15) * dir;
     this.mesh.material.uniforms.uVelo.value = maxVel * 0.02;
     this.mesh.material.uniforms.uScale.value = 1 - Math.abs(maxVel * 0.001);
 
