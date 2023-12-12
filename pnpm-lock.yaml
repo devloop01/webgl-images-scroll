@@ -11,9 +11,6 @@ dependencies:
   gsap:
     specifier: ^3.12.3
     version: 3.12.3
-  ogl:
-    specifier: ^1.0.3
-    version: 1.0.3
   stats-gl:
     specifier: ^2.0.1
     version: 2.0.1
@@ -409,10 +406,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
-
-  /ogl@1.0.3:
-    resolution: {integrity: sha512-MOpTaRVZB5ekoBbLp3ANLQVxm9/QgREkwT0/O+tkc73ElIOAxedUFv+F6vSfVtG1m5TuYKaTUsFexXvCkHuhSw==}
-    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
