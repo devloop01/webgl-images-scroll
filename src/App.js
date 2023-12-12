@@ -3,6 +3,8 @@ import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
 import { GlImage } from "./GlImage";
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 // images from: https://unsplash.com/@resourcedatabase
 
 export class App {
@@ -54,14 +56,16 @@ export class App {
   createGlImages() {
     const planeGeometry = new PlaneGeometry(1, 1, 32, 32);
 
-    this.glImages = this.domImages.map((element) => {
-      return new GlImage({
-        element,
-        geometry: planeGeometry,
-        scene: this.scene,
-        screen: this.screen,
-        viewport: this.viewport,
-        parentHeight: this.imagesParentHeight,
+    sleep(100).then(() => {
+      this.glImages = this.domImages.map((element) => {
+        return new GlImage({
+          element,
+          geometry: planeGeometry,
+          scene: this.scene,
+          screen: this.screen,
+          viewport: this.viewport,
+          parentHeight: this.imagesParentHeight,
+        });
       });
     });
   }
