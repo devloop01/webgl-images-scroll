@@ -1,20 +1,12 @@
-import { WebGLRenderer, PerspectiveCamera, Scene, PlaneGeometry } from "three";
+import { WebGLRenderer, PerspectiveCamera, Scene, PlaneGeometry, Vector2 } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
 import { GlImagesStrip } from "./GlImageStrip";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const shuffle = (array) => array.toSorted(() => Math.random() - 0.5);
 
 // images from: https://unsplash.com/@resourcedatabase
-const imageUrls = [
-  "/images/image-1.jpg",
-  "/images/image-2.jpg",
-  "/images/image-3.jpg",
-  "/images/image-4.jpg",
-  "/images/image-5.jpg",
-  "/images/image-6.jpg",
-];
 
 export class App {
   constructor({ canvas }) {
@@ -58,6 +50,8 @@ export class App {
     this.camera.position.z = 10;
 
     this.scene = new Scene();
+
+    this.controls = new OrbitControls(this.camera, this.canvas);
   }
 
   createGlImageStrip() {
@@ -103,8 +97,12 @@ export class App {
       this.lenis.raf(time);
       this.rafId = requestAnimationFrame(raf);
 
-      this.renderer.render(this.scene, this.camera);
+      if (this.glImagesStrip) {
+        this.glImagesStrip.forEach((glImageStrip) => glImageStrip.update(this.lenis));
+      }
+
       this.stats.update();
+      this.renderer.render(this.scene, this.camera);
     };
 
     this.rafId = requestAnimationFrame(raf);
@@ -135,9 +133,9 @@ export class App {
   }
 
   onScroll(scrollEvent) {
-    if (this.glImagesStrip) {
-      this.glImagesStrip.forEach((glImageStrip) => glImageStrip.onScroll(scrollEvent));
-    }
+    // if (this.glImagesStrip) {
+    //   this.glImagesStrip.forEach((glImageStrip) => glImageStrip.update(scrollEvent));
+    // }
   }
 
   addEventListeners() {

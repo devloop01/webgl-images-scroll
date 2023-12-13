@@ -35,8 +35,10 @@ export class GlImage {
       uTexture: { value: 0 },
       uPlaneSize: { value: [0, 0] },
       uTextureSize: { value: [0, 0] },
+      uViewportSize: { value: [this.viewport.width, this.viewport.height] },
       uVelo: { value: 0 },
       uScale: { value: 1 },
+      uStrength: { value: 0 },
     };
 
     textureLoader.load(this.image.src, (texture) => {
@@ -92,6 +94,7 @@ export class GlImage {
     const maxVel = Math.min(Math.abs(vel), 15) * dir;
     this.mesh.material.uniforms.uVelo.value = maxVel * 0.02;
     this.mesh.material.uniforms.uScale.value = 1 - Math.abs(maxVel * 0.001);
+    this.mesh.material.uniforms.uStrength.value = vel * 0.004;
 
     const meshOffset = this.mesh.scale.y / 2;
     const viewportOffset = this.viewport.height / 2;
@@ -116,8 +119,11 @@ export class GlImage {
 
   onResize({ screen, viewport, parentHeight } = {}) {
     if (screen) this.screen = screen;
-    if (viewport) this.viewport = viewport;
     if (parentHeight) this.parentHeight = parentHeight;
+    if (viewport) {
+      this.viewport = viewport;
+      this.mesh.material.uniforms.uViewportSize.value = [this.viewport.width, this.viewport.height];
+    }
 
     this.offsetY = 0;
     this.createBounds();

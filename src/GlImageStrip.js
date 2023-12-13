@@ -26,6 +26,7 @@ export class GlImagesStrip {
     this.offsetX = offsetX;
 
     this.scrollY = 0;
+    this.scrollSpeedOffset = 1 + Math.random() * 0.25;
 
     this.onResize();
     this.createGlImages();
@@ -51,6 +52,16 @@ export class GlImagesStrip {
     this.glStrip.position.x = this.offsetX;
   }
 
+  update(scrollEvent) {
+    const vel = scrollEvent.velocity;
+    this.scrollY += vel * this.scrollDirection * this.scrollSpeedOffset;
+    const dir = (scrollEvent.direction || 0) * this.scrollDirection;
+
+    if (this.glImages) {
+      this.glImages.forEach((glImage) => glImage.update(this.scrollY, vel, dir));
+    }
+  }
+
   onResize({ screen, viewport } = {}) {
     const parentBounds = this.parentElement.getBoundingClientRect();
     this.parentHeight = (this.viewport.height * parentBounds.height) / this.screen.height;
@@ -59,16 +70,6 @@ export class GlImagesStrip {
       this.glImages.forEach((glImage) =>
         glImage.onResize({ screen, viewport, parentHeight: this.parentHeight })
       );
-    }
-  }
-
-  onScroll(scrollEvent) {
-    const vel = scrollEvent.velocity;
-    this.scrollY += vel * this.scrollDirection;
-    const dir = scrollEvent.direction * this.scrollDirection;
-
-    if (this.glImages) {
-      this.glImages.forEach((glImage) => glImage.update(this.scrollY, vel, dir));
     }
   }
 }

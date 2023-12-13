@@ -15,7 +15,6 @@
   "dependencies": {
     "@studio-freight/lenis": "^1.0.29",
     "gsap": "^3.12.3",
-    "normalize-wheel-es": "^1.2.0",
     "stats-gl": "^2.0.1",
     "three": "^0.159.0"
   }
