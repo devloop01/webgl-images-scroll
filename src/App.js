@@ -1,11 +1,20 @@
 import { WebGLRenderer, PerspectiveCamera, Scene, PlaneGeometry } from "three";
 import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
-import { GlImage } from "./GlImage";
+import { GlImagesStrip } from "./GlImageStrip";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const shuffle = (array) => array.toSorted(() => Math.random() - 0.5);
 
 // images from: https://unsplash.com/@resourcedatabase
+const imageUrls = [
+  "/images/image-1.jpg",
+  "/images/image-2.jpg",
+  "/images/image-3.jpg",
+  "/images/image-4.jpg",
+  "/images/image-5.jpg",
+  "/images/image-6.jpg",
+];
 
 export class App {
   constructor({ canvas }) {
@@ -16,21 +25,19 @@ export class App {
       height: window.innerHeight,
     };
 
-    this.domImages = [...document.querySelectorAll(".images img")];
-    this.imagesParent = document.querySelector(".images");
-
-    this.scrollY = 0;
     this.rafId = 0;
 
     this.stats = new Stats({ minimal: true });
     document.body.appendChild(this.stats.dom);
 
-    this.initSmoothScroll();
-    this.initGl();
-    this.onResize();
-    this.createGlImages();
-    this.addEventListeners();
-    this.render();
+    sleep(import.meta.env.DEV ? 10 : 1000).then(() => {
+      this.initSmoothScroll();
+      this.initGl();
+      this.onResize();
+      this.createGlImageStrip();
+      this.addEventListeners();
+      this.render();
+    });
   }
 
   initSmoothScroll() {
@@ -53,22 +60,40 @@ export class App {
     this.scene = new Scene();
   }
 
-  createGlImages() {
+  createGlImageStrip() {
     const planeGeometry = new PlaneGeometry(1, 1, 32, 32);
 
-    sleep(import.meta.env.DEV ? 0 : 1000).then(() => {
-      console.log("gl images");
-      this.glImages = this.domImages.map((element) => {
-        return new GlImage({
-          element,
-          geometry: planeGeometry,
-          scene: this.scene,
-          screen: this.screen,
-          viewport: this.viewport,
-          parentHeight: this.imagesParentHeight,
-        });
-      });
-    });
+    this.glImagesStrip = [];
+
+    const props = {
+      geometry: planeGeometry,
+      scene: this.scene,
+      screen: this.screen,
+      viewport: this.viewport,
+    };
+
+    const offsetX = 0;
+
+    this.glImagesStrip.push(
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-1"),
+        scrollDirection: -1,
+        offsetX: offsetX * -1,
+      }),
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-2"),
+        scrollDirection: 1,
+        offsetX: 0,
+      }),
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-3"),
+        scrollDirection: -1,
+        offsetX,
+      })
+    );
   }
 
   render() {
@@ -99,26 +124,19 @@ export class App {
 
     this.calculateViewport();
 
-    const parentBounds = this.imagesParent.getBoundingClientRect();
-    this.imagesParentHeight = (this.viewport.height * parentBounds.height) / this.screen.height;
-
-    if (this.glImages) {
-      this.glImages.forEach((glImage) =>
-        glImage.onResize({
+    if (this.glImagesStrip) {
+      this.glImagesStrip.forEach((glImageStrip) =>
+        glImageStrip.onResize({
           screen: this.screen,
           viewport: this.viewport,
-          parentHeight: this.imagesParentHeight,
         })
       );
     }
   }
 
   onScroll(scrollEvent) {
-    const vel = scrollEvent.velocity;
-    this.scrollY += vel;
-
-    if (this.glImages) {
-      this.glImages.forEach((glImage) => glImage.update(this.scrollY, vel, scrollEvent.direction));
+    if (this.glImagesStrip) {
+      this.glImagesStrip.forEach((glImageStrip) => glImageStrip.onScroll(scrollEvent));
     }
   }
 

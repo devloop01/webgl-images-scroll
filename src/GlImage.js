@@ -51,7 +51,7 @@ export class GlImage {
     });
 
     this.mesh = new Mesh(this.geometry, material);
-    this.scene.add(this.mesh);
+    // this.scene.add(this.mesh);
   }
 
   createBounds() {
@@ -101,13 +101,13 @@ export class GlImage {
 
     // dir: -1 = up, 1 = down
 
-    if (dir === -1 && isBefore) {
+    if (isBefore) {
       this.offsetY -= this.parentHeight;
       isBefore = false;
       isAfter = false;
     }
 
-    if (dir === 1 && isAfter) {
+    if (isAfter) {
       this.offsetY += this.parentHeight;
       isBefore = false;
       isAfter = false;
