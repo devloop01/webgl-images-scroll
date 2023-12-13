@@ -9,6 +9,8 @@ const planeMaterial = new ShaderMaterial({
   fragmentShader,
 });
 
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
 export class GlImage {
   constructor({ element, geometry, scene, screen, viewport, parentHeight }) {
     this.element = element;
@@ -35,8 +37,10 @@ export class GlImage {
       uTexture: { value: 0 },
       uPlaneSize: { value: [0, 0] },
       uTextureSize: { value: [0, 0] },
+      uViewportSize: { value: [this.viewport.width, this.viewport.height] },
       uVelo: { value: 0 },
       uScale: { value: 1 },
+      uStrength: { value: 0 },
     };
 
     textureLoader.load(this.image.src, (texture) => {
@@ -51,7 +55,7 @@ export class GlImage {
     });
 
     this.mesh = new Mesh(this.geometry, material);
-    this.scene.add(this.mesh);
+    // this.scene.add(this.mesh);
   }
 
   createBounds() {
@@ -92,6 +96,7 @@ export class GlImage {
     const maxVel = Math.min(Math.abs(vel), 15) * dir;
     this.mesh.material.uniforms.uVelo.value = maxVel * 0.02;
     this.mesh.material.uniforms.uScale.value = 1 - Math.abs(maxVel * 0.001);
+    this.mesh.material.uniforms.uStrength.value = vel * 0.003;
 
     const meshOffset = this.mesh.scale.y / 2;
     const viewportOffset = this.viewport.height / 2;
@@ -101,13 +106,13 @@ export class GlImage {
 
     // dir: -1 = up, 1 = down
 
-    if (dir === -1 && isBefore) {
+    if (isBefore) {
       this.offsetY -= this.parentHeight;
       isBefore = false;
       isAfter = false;
     }
 
-    if (dir === 1 && isAfter) {
+    if (isAfter) {
       this.offsetY += this.parentHeight;
       isBefore = false;
       isAfter = false;
@@ -116,8 +121,11 @@ export class GlImage {
 
   onResize({ screen, viewport, parentHeight } = {}) {
     if (screen) this.screen = screen;
-    if (viewport) this.viewport = viewport;
     if (parentHeight) this.parentHeight = parentHeight;
+    if (viewport) {
+      this.viewport = viewport;
+      this.mesh.material.uniforms.uViewportSize.value = [this.viewport.width, this.viewport.height];
+    }
 
     this.offsetY = 0;
     this.createBounds();

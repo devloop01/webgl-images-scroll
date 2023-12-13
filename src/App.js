@@ -1,7 +1,8 @@
-import { WebGLRenderer, PerspectiveCamera, Scene, PlaneGeometry } from "three";
+import { WebGLRenderer, PerspectiveCamera, Scene, PlaneGeometry, Vector2 } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Stats from "stats-gl";
 import Lenis from "@studio-freight/lenis";
-import { GlImage } from "./GlImage";
+import { GlImagesStrip } from "./GlImageStrip";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -16,21 +17,19 @@ export class App {
       height: window.innerHeight,
     };
 
-    this.domImages = [...document.querySelectorAll(".images img")];
-    this.imagesParent = document.querySelector(".images");
-
-    this.scrollY = 0;
     this.rafId = 0;
 
     this.stats = new Stats({ minimal: true });
     document.body.appendChild(this.stats.dom);
 
-    this.initSmoothScroll();
-    this.initGl();
-    this.onResize();
-    this.createGlImages();
-    this.addEventListeners();
-    this.render();
+    sleep(import.meta.env.DEV ? 10 : 1000).then(() => {
+      this.initSmoothScroll();
+      this.initGl();
+      this.onResize();
+      this.createGlImageStrip();
+      this.addEventListeners();
+      this.render();
+    });
   }
 
   initSmoothScroll() {
@@ -51,24 +50,39 @@ export class App {
     this.camera.position.z = 10;
 
     this.scene = new Scene();
+
+    this.controls = new OrbitControls(this.camera, this.canvas);
   }
 
-  createGlImages() {
+  createGlImageStrip() {
     const planeGeometry = new PlaneGeometry(1, 1, 32, 32);
 
-    sleep(import.meta.env.DEV ? 0 : 1000).then(() => {
-      console.log("gl images");
-      this.glImages = this.domImages.map((element) => {
-        return new GlImage({
-          element,
-          geometry: planeGeometry,
-          scene: this.scene,
-          screen: this.screen,
-          viewport: this.viewport,
-          parentHeight: this.imagesParentHeight,
-        });
-      });
-    });
+    this.glImagesStrip = [];
+
+    const props = {
+      geometry: planeGeometry,
+      scene: this.scene,
+      screen: this.screen,
+      viewport: this.viewport,
+    };
+
+    this.glImagesStrip.push(
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-1"),
+        scrollDirection: -1,
+      }),
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-2"),
+        scrollDirection: 1,
+      }),
+      new GlImagesStrip({
+        ...props,
+        parentElement: document.querySelector(".images-strip-3"),
+        scrollDirection: -1,
+      })
+    );
   }
 
   render() {
@@ -78,8 +92,12 @@ export class App {
       this.lenis.raf(time);
       this.rafId = requestAnimationFrame(raf);
 
-      this.renderer.render(this.scene, this.camera);
+      if (this.glImagesStrip) {
+        this.glImagesStrip.forEach((glImageStrip) => glImageStrip.update(this.lenis));
+      }
+
       this.stats.update();
+      this.renderer.render(this.scene, this.camera);
     };
 
     this.rafId = requestAnimationFrame(raf);
@@ -99,27 +117,20 @@ export class App {
 
     this.calculateViewport();
 
-    const parentBounds = this.imagesParent.getBoundingClientRect();
-    this.imagesParentHeight = (this.viewport.height * parentBounds.height) / this.screen.height;
-
-    if (this.glImages) {
-      this.glImages.forEach((glImage) =>
-        glImage.onResize({
+    if (this.glImagesStrip) {
+      this.glImagesStrip.forEach((glImageStrip) =>
+        glImageStrip.onResize({
           screen: this.screen,
           viewport: this.viewport,
-          parentHeight: this.imagesParentHeight,
         })
       );
     }
   }
 
   onScroll(scrollEvent) {
-    const vel = scrollEvent.velocity;
-    this.scrollY += vel;
-
-    if (this.glImages) {
-      this.glImages.forEach((glImage) => glImage.update(this.scrollY, vel, scrollEvent.direction));
-    }
+    // if (this.glImagesStrip) {
+    //   this.glImagesStrip.forEach((glImageStrip) => glImageStrip.update(scrollEvent));
+    // }
   }
 
   addEventListeners() {
