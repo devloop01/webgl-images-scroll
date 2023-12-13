@@ -1,3 +1,7 @@
+:root {
+  --gap: min(1vw, 1rem);
+}
+
 body {
   overflow: hidden;
 }
@@ -5,7 +9,7 @@ body {
 .container {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: var(--gap);
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -13,8 +17,8 @@ body {
 .images {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding-top: 1rem;
+  gap: var(--gap);
+  padding-top: var(--gap);
 }
 
 figure {

@@ -66,26 +66,21 @@ export class App {
       viewport: this.viewport,
     };
 
-    const offsetX = 0;
-
     this.glImagesStrip.push(
       new GlImagesStrip({
         ...props,
         parentElement: document.querySelector(".images-strip-1"),
         scrollDirection: -1,
-        offsetX: offsetX * -1,
       }),
       new GlImagesStrip({
         ...props,
         parentElement: document.querySelector(".images-strip-2"),
         scrollDirection: 1,
-        offsetX: 0,
       }),
       new GlImagesStrip({
         ...props,
         parentElement: document.querySelector(".images-strip-3"),
         scrollDirection: -1,
-        offsetX,
       })
     );
   }

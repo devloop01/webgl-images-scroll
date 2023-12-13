@@ -9,6 +9,8 @@ const planeMaterial = new ShaderMaterial({
   fragmentShader,
 });
 
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
 export class GlImage {
   constructor({ element, geometry, scene, screen, viewport, parentHeight }) {
     this.element = element;
@@ -94,7 +96,7 @@ export class GlImage {
     const maxVel = Math.min(Math.abs(vel), 15) * dir;
     this.mesh.material.uniforms.uVelo.value = maxVel * 0.02;
     this.mesh.material.uniforms.uScale.value = 1 - Math.abs(maxVel * 0.001);
-    this.mesh.material.uniforms.uStrength.value = vel * 0.004;
+    this.mesh.material.uniforms.uStrength.value = vel * 0.003;
 
     const meshOffset = this.mesh.scale.y / 2;
     const viewportOffset = this.viewport.height / 2;

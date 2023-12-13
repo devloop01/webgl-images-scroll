@@ -2,17 +2,7 @@ import { Group } from "three";
 import { GlImage } from "./GlImage";
 
 export class GlImagesStrip {
-  constructor({
-    parentElement,
-    domImages,
-    geometry,
-    scene,
-    screen,
-    viewport,
-    parentHeight,
-    scrollDirection,
-    offsetX,
-  }) {
+  constructor({ parentElement, geometry, scene, screen, viewport, parentHeight, scrollDirection }) {
     this.parentElement = parentElement;
     this.domImages = [...this.parentElement.querySelectorAll("img")];
 
@@ -23,7 +13,6 @@ export class GlImagesStrip {
 
     this.parentHeight = parentHeight;
     this.scrollDirection = scrollDirection;
-    this.offsetX = offsetX;
 
     this.scrollY = 0;
     this.scrollSpeedOffset = 1 + Math.random() * 0.25;
@@ -47,9 +36,7 @@ export class GlImagesStrip {
     });
 
     this.glStrip.add(...this.glImages.map((glImage) => glImage.mesh));
-
     this.scene.add(this.glStrip);
-    this.glStrip.position.x = this.offsetX;
   }
 
   update(scrollEvent) {
